@@ -2,6 +2,7 @@ import express, { Request, Response } from "express"
 import {Pool} from "pg"
 import config from "./config";
 import initDB, { pool } from "./config/db";
+import { userRouter } from "./route/user.route";
 
 const app = express()
 const port = config.port;
@@ -17,32 +18,34 @@ initDB()
 app.get('/', (req:Request, res:Response) => {
   res.send('Hello World!')
 })
-app.post("/users", async(req:Request, res:Response)=>{
-    const {name,email}=req.body;
 
-    try {
-        const result= await pool.query(
-            `
-            INSERT INTO users(name,email) VALUES($1,$2) RETURNING *
-            `,[name,email]
-        )
-        res.status(201).json({
-            success:true,
-            message:"data inserted",
-            data: result.rows[0]
-        })
+app.use("/users",userRouter)
+// app.post("/users", async(req:Request, res:Response)=>{
+//     const {name,email}=req.body;
+
+//     try {
+//         const result= await pool.query(
+//             `
+//             INSERT INTO users(name,email) VALUES($1,$2) RETURNING *
+//             `,[name,email]
+//         )
+//         res.status(201).json({
+//             success:true,
+//             message:"data inserted",
+//             data: result.rows[0]
+//         })
         
         
-    } catch (err:any) {
-        res.status(500).json({
-            success:false,
-            message:err.message
-        })
+//     } catch (err:any) {
+//         res.status(500).json({
+//             success:false,
+//             message:err.message
+//         })
         
-    }
+//     }
     
   
-})
+// })
 
 app.get('/users',async (req:Request,res:Response)=>{
     try {
